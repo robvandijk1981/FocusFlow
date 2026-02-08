@@ -1,12 +1,12 @@
 // Prisma schema for FocusFlow
-// Database: SQLite for development, PostgreSQL for production
+// Database: PostgreSQL for production
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
