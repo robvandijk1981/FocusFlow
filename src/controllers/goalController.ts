@@ -11,7 +11,7 @@ export const getAllGoals = asyncHandler(async (req: Request, res: Response) => {
   const goals = await prisma.goal.findMany({
     where: {
       deletedAt: null,
-      ...(query.projectId && { projectId: query.projectId }),
+      ...(query.projectId && { projectId: String(query.projectId) }),
     },
     include: {
       project: true,
@@ -28,9 +28,9 @@ export const getAllGoals = asyncHandler(async (req: Request, res: Response) => {
   });
 
   // Add computed fields
-  const goalsWithStats = goals.map(goal => ({
+  const goalsWithStats = goals.map((goal: any) => ({
     ...goal,
-    completedCount: goal.tasks.filter(t => t.completed).length,
+    completedCount: goal.tasks.filter((t: any) => t.completed).length,
     totalCount: goal.tasks.length,
   }));
 
@@ -39,7 +39,7 @@ export const getAllGoals = asyncHandler(async (req: Request, res: Response) => {
 
 // GET /api/goals/:id - Get single goal
 export const getGoalById = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = String(req.params.id);
 
   const goal = await prisma.goal.findFirst({
     where: { id, deletedAt: null },
@@ -63,8 +63,8 @@ export const getGoalById = asyncHandler(async (req: Request, res: Response) => {
   // Add computed fields
   const goalWithStats = {
     ...goal,
-    completedCount: goal.tasks.filter(t => t.completed).length,
-    totalCount: goal.tasks.length,
+    completedCount: (goal as any).tasks.filter((t: any) => t.completed).length,
+    totalCount: (goal as any).tasks.length,
   };
 
   successResponse(res, goalWithStats);
@@ -76,15 +76,18 @@ export const createGoal = asyncHandler(async (req: Request, res: Response) => {
 
   // Verify project exists
   const project = await prisma.project.findFirst({
-    where: { id: validatedData.projectId, deletedAt: null },
+    where: { id: String(validatedData.projectId), deletedAt: null },
   });
 
   if (!project) {
-    throw new NotFoundError('Project', validatedData.projectId);
+    throw new NotFoundError('Project', String(validatedData.projectId));
   }
 
   const goal = await prisma.goal.create({
-    data: validatedData,
+    data: {
+      name: validatedData.name,
+      projectId: validatedData.projectId,
+    },
     include: {
       project: true,
       tasks: true,
@@ -96,7 +99,7 @@ export const createGoal = asyncHandler(async (req: Request, res: Response) => {
 
 // PUT /api/goals/:id - Update goal
 export const updateGoal = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = String(req.params.id);
   const validatedData = UpdateGoalSchema.parse(req.body);
 
   // Check if goal exists
@@ -111,11 +114,11 @@ export const updateGoal = asyncHandler(async (req: Request, res: Response) => {
   // If updating projectId, verify new project exists
   if (validatedData.projectId) {
     const project = await prisma.project.findFirst({
-      where: { id: validatedData.projectId, deletedAt: null },
+      where: { id: String(validatedData.projectId), deletedAt: null },
     });
 
     if (!project) {
-      throw new NotFoundError('Project', validatedData.projectId);
+      throw new NotFoundError('Project', String(validatedData.projectId));
     }
   }
 
@@ -135,7 +138,7 @@ export const updateGoal = asyncHandler(async (req: Request, res: Response) => {
 
 // DELETE /api/goals/:id - Soft delete goal
 export const deleteGoal = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = String(req.params.id);
 
   // Check if goal exists
   const existingGoal = await prisma.goal.findFirst({

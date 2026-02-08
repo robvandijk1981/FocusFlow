@@ -1,7 +1,7 @@
 import morgan from 'morgan';
 
 // Custom token for response time in milliseconds
-morgan.token('response-time-ms', (req, res) => {
+morgan.token('response-time-ms', (_req, res) => {
   const responseTime = res.getHeader('X-Response-Time');
   return responseTime ? `${responseTime}ms` : '-';
 });

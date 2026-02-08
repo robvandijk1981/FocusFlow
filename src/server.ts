@@ -10,7 +10,7 @@ import { handleError } from './utils/errors';
 dotenv.config();
 
 // Create Express app
-const app = express();
+const app: express.Application = express();
 const PORT = process.env.PORT || 3001;
 const API_PREFIX = process.env.API_PREFIX || '/api';
 
@@ -28,7 +28,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Root endpoint
-app.get('/', (req: Request, res: Response) => {
+app.get('/', (_req: Request, res: Response) => {
   res.json({
     name: 'FocusFlow API',
     version: '1.0.0',
@@ -57,7 +57,7 @@ app.use((req: Request, res: Response) => {
 });
 
 // Global error handler
-app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
+app.use((error: Error, _req: Request, res: Response, _next: NextFunction) => {
   handleError(error, res);
 });
 

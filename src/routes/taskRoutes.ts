@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, IRouter } from 'express';
 import {
   getAllTasks,
   getTodaysTasks,
@@ -8,7 +8,7 @@ import {
   deleteTask,
 } from '../controllers/taskController';
 
-const router = Router();
+const router: IRouter = Router();
 
 /**
  * @route   GET /api/tasks/today

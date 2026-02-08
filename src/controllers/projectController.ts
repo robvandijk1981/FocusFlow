@@ -5,7 +5,7 @@ import { successResponse, createdResponse, noContentResponse } from '../utils/re
 import { NotFoundError, asyncHandler } from '../utils/errors';
 
 // GET /api/projects - List all projects with goals and tasks
-export const getAllProjects = asyncHandler(async (req: Request, res: Response) => {
+export const getAllProjects = asyncHandler(async (_req: Request, res: Response) => {
   const projects = await prisma.project.findMany({
     where: { deletedAt: null },
     include: {
@@ -28,11 +28,11 @@ export const getAllProjects = asyncHandler(async (req: Request, res: Response) =
   });
 
   // Add computed fields for goals
-  const projectsWithStats = projects.map(project => ({
+  const projectsWithStats = projects.map((project: any) => ({
     ...project,
-    goals: project.goals.map(goal => ({
+    goals: project.goals.map((goal: any) => ({
       ...goal,
-      completedCount: goal.tasks.filter(t => t.completed).length,
+      completedCount: goal.tasks.filter((t: any) => t.completed).length,
       totalCount: goal.tasks.length,
     })),
   }));
@@ -42,7 +42,7 @@ export const getAllProjects = asyncHandler(async (req: Request, res: Response) =
 
 // GET /api/projects/:id - Get single project
 export const getProjectById = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = String(req.params.id);
 
   const project = await prisma.project.findFirst({
     where: { id, deletedAt: null },
@@ -71,9 +71,9 @@ export const getProjectById = asyncHandler(async (req: Request, res: Response) =
   // Add computed fields
   const projectWithStats = {
     ...project,
-    goals: project.goals.map(goal => ({
+    goals: (project as any).goals.map((goal: any) => ({
       ...goal,
-      completedCount: goal.tasks.filter(t => t.completed).length,
+      completedCount: goal.tasks.filter((t: any) => t.completed).length,
       totalCount: goal.tasks.length,
     })),
   };
@@ -86,7 +86,9 @@ export const createProject = asyncHandler(async (req: Request, res: Response) =>
   const validatedData = CreateProjectSchema.parse(req.body);
 
   const project = await prisma.project.create({
-    data: validatedData,
+    data: {
+      name: validatedData.name,
+    },
     include: {
       goals: true,
     },
@@ -97,7 +99,7 @@ export const createProject = asyncHandler(async (req: Request, res: Response) =>
 
 // PUT /api/projects/:id - Update project
 export const updateProject = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = String(req.params.id);
   const validatedData = UpdateProjectSchema.parse(req.body);
 
   // Check if project exists
@@ -129,7 +131,7 @@ export const updateProject = asyncHandler(async (req: Request, res: Response) =>
 
 // DELETE /api/projects/:id - Soft delete project
 export const deleteProject = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = String(req.params.id);
 
   // Check if project exists
   const existingProject = await prisma.project.findFirst({

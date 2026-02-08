@@ -1,11 +1,11 @@
-import { Router } from 'express';
+import { Router, IRouter } from 'express';
 import { healthCheck } from '../controllers/healthController';
 import { syncData } from '../controllers/syncController';
 import projectRoutes from './projectRoutes';
 import goalRoutes from './goalRoutes';
 import taskRoutes from './taskRoutes';
 
-const router = Router();
+const router: IRouter = Router();
 
 // Health check
 router.get('/health', healthCheck);

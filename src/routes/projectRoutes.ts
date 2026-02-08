@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, IRouter } from 'express';
 import {
   getAllProjects,
   getProjectById,
@@ -7,7 +7,7 @@ import {
   deleteProject,
 } from '../controllers/projectController';
 
-const router = Router();
+const router: IRouter = Router();
 
 /**
  * @route   GET /api/projects

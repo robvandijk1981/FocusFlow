@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, IRouter } from 'express';
 import {
   getAllGoals,
   getGoalById,
@@ -7,7 +7,7 @@ import {
   deleteGoal,
 } from '../controllers/goalController';
 
-const router = Router();
+const router: IRouter = Router();
 
 /**
  * @route   GET /api/goals

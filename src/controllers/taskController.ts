@@ -11,8 +11,8 @@ export const getAllTasks = asyncHandler(async (req: Request, res: Response) => {
   const tasks = await prisma.task.findMany({
     where: {
       deletedAt: null,
-      ...(query.goalId && { goalId: query.goalId }),
-      ...(query.urgency && { urgency: query.urgency }),
+      ...(query.goalId && { goalId: String(query.goalId) }),
+      ...(query.urgency && { urgency: String(query.urgency) }),
       ...(query.todaysFocus && { todaysFocus: query.todaysFocus === 'true' }),
       ...(query.completed && { completed: query.completed === 'true' }),
     },
@@ -34,7 +34,7 @@ export const getAllTasks = asyncHandler(async (req: Request, res: Response) => {
 });
 
 // GET /api/tasks/today - Get all tasks marked for Today's Focus
-export const getTodaysTasks = asyncHandler(async (req: Request, res: Response) => {
+export const getTodaysTasks = asyncHandler(async (_req: Request, res: Response) => {
   const tasks = await prisma.task.findMany({
     where: {
       deletedAt: null,
@@ -59,7 +59,7 @@ export const getTodaysTasks = asyncHandler(async (req: Request, res: Response) =
 
 // GET /api/tasks/:id - Get single task
 export const getTaskById = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = String(req.params.id);
 
   const task = await prisma.task.findFirst({
     where: { id, deletedAt: null },
@@ -85,15 +85,21 @@ export const createTask = asyncHandler(async (req: Request, res: Response) => {
 
   // Verify goal exists
   const goal = await prisma.goal.findFirst({
-    where: { id: validatedData.goalId, deletedAt: null },
+    where: { id: String(validatedData.goalId), deletedAt: null },
   });
 
   if (!goal) {
-    throw new NotFoundError('Goal', validatedData.goalId);
+    throw new NotFoundError('Goal', String(validatedData.goalId));
   }
 
   const task = await prisma.task.create({
-    data: validatedData,
+    data: {
+      name: validatedData.name,
+      goalId: validatedData.goalId,
+      urgency: validatedData.urgency,
+      todaysFocus: validatedData.todaysFocus,
+      completed: validatedData.completed,
+    },
     include: {
       goal: {
         include: {
@@ -108,7 +114,7 @@ export const createTask = asyncHandler(async (req: Request, res: Response) => {
 
 // PUT /api/tasks/:id - Update task
 export const updateTask = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = String(req.params.id);
   const validatedData = UpdateTaskSchema.parse(req.body);
 
   // Check if task exists
@@ -123,11 +129,11 @@ export const updateTask = asyncHandler(async (req: Request, res: Response) => {
   // If updating goalId, verify new goal exists
   if (validatedData.goalId) {
     const goal = await prisma.goal.findFirst({
-      where: { id: validatedData.goalId, deletedAt: null },
+      where: { id: String(validatedData.goalId), deletedAt: null },
     });
 
     if (!goal) {
-      throw new NotFoundError('Goal', validatedData.goalId);
+      throw new NotFoundError('Goal', String(validatedData.goalId));
     }
   }
 
@@ -160,7 +166,7 @@ export const updateTask = asyncHandler(async (req: Request, res: Response) => {
 
 // DELETE /api/tasks/:id - Soft delete task
 export const deleteTask = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = String(req.params.id);
 
   // Check if task exists
   const existingTask = await prisma.task.findFirst({

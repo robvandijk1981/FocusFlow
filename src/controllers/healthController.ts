@@ -7,7 +7,7 @@ import { successResponse } from '../utils/response';
  * GET /api/health - Health check endpoint
  * Returns server status and database connectivity
  */
-export const healthCheck = asyncHandler(async (req: Request, res: Response) => {
+export const healthCheck = asyncHandler(async (_req: Request, res: Response) => {
   // Check database connectivity
   let dbStatus = 'connected';
   try {
