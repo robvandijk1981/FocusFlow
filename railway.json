@@ -1,10 +1,10 @@
 {
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
-    "builder": "NIXPACKS"
+    "builder": "DOCKERFILE"
   },
   "deploy": {
-    "startCommand": "pnpm prisma migrate deploy && pnpm start",
+    "startCommand": "pnpm prisma migrate deploy && node dist/server.js",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
