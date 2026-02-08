@@ -1,6 +1,9 @@
 # Single-stage build for simplicity
 FROM node:22-alpine
 
+# Install OpenSSL and other dependencies needed by Prisma
+RUN apk add --no-cache openssl openssl-dev libc6-compat
+
 # Install pnpm
 RUN npm install -g pnpm
 
