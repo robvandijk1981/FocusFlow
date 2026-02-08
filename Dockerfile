@@ -1,5 +1,5 @@
-# Multi-stage build for production
-FROM node:22-alpine AS builder
+# Single-stage build for simplicity
+FROM node:22-alpine
 
 # Install pnpm
 RUN npm install -g pnpm
@@ -10,7 +10,7 @@ WORKDIR /app
 # Copy package files
 COPY package.json pnpm-lock.yaml* ./
 
-# Install dependencies
+# Install all dependencies
 RUN pnpm install --frozen-lockfile
 
 # Copy source code
@@ -21,28 +21,6 @@ RUN pnpm prisma:generate
 
 # Build TypeScript
 RUN pnpm build
-
-# Production stage
-FROM node:22-alpine
-
-# Install pnpm
-RUN npm install -g pnpm
-
-WORKDIR /app
-
-# Copy package files
-COPY package.json pnpm-lock.yaml* ./
-
-# Install production dependencies only
-RUN pnpm install --prod --frozen-lockfile
-
-# Copy built files and Prisma schema
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/prisma ./prisma
-
-# Copy Prisma client from node_modules (pnpm structure)
-COPY --from=builder /app/node_modules/.pnpm/@prisma+client*/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
 # Expose port
 EXPOSE 3001
