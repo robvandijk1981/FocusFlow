@@ -3,13 +3,18 @@ import { z } from 'zod';
 // Urgency enum
 export const UrgencySchema = z.enum(['LAAG', 'MIDDEN', 'HOOG']);
 
+// Project colors enum
+export const ColorSchema = z.enum(['teal', 'blue', 'purple', 'pink', 'orange', 'green', 'red', 'yellow']);
+
 // Project validation schemas
 export const CreateProjectSchema = z.object({
   name: z.string().min(1, 'Project name is required').max(255),
+  color: ColorSchema.optional(),
 });
 
 export const UpdateProjectSchema = z.object({
   name: z.string().min(1).max(255).optional(),
+  color: ColorSchema.optional(),
 });
 
 // Goal validation schemas
