@@ -5,6 +5,7 @@ const corsOrigins = process.env.CORS_ORIGINS?.split(',').map(origin => origin.tr
   'http://localhost:3000',
   'http://localhost:5173',
   'https://focusflow-today.manus.space',
+  'https://focus-flow-frontend-iota.vercel.app',
 ];
 
 export const corsMiddleware = cors({
