@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import { prisma } from '../utils/prisma';
 import { SyncSchema } from '../utils/validation';
-import { successResponse, asyncHandler } from '../utils/errors';
+import { asyncHandler } from '../utils/errors';
+import { successResponse } from '../utils/response';
 
 /**
  * POST /api/sync - Sync local state with server
