@@ -1,0 +1,68 @@
+// Prisma schema for FocusFlow
+// Database: SQLite for development, PostgreSQL for production
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Projects (called "Tracks" in the UI)
+model Project {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  
+  // Relations
+  goals     Goal[]
+  
+  @@index([deletedAt])
+  @@map("projects")
+}
+
+// Goals (belong to Projects)
+model Goal {
+  id        String   @id @default(cuid())
+  projectId String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  
+  // Relations
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tasks     Task[]
+  
+  @@index([projectId])
+  @@index([deletedAt])
+  @@map("goals")
+}
+
+// Tasks (belong to Goals)
+model Task {
+  id          String   @id @default(cuid())
+  goalId      String
+  name        String
+  completed   Boolean  @default(false)
+  urgency     String   @default("MIDDEN") // LAAG, MIDDEN, HOOG
+  todaysFocus Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  completedAt DateTime?
+  deletedAt   DateTime?
+  
+  // Relations
+  goal        Goal     @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  
+  @@index([goalId])
+  @@index([todaysFocus])
+  @@index([completed])
+  @@index([urgency])
+  @@index([deletedAt])
+  @@map("tasks")
+}
