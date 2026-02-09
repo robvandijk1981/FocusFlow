@@ -182,5 +182,5 @@ export const deleteTask = asyncHandler(async (req: Request, res: Response) => {
     data: { deletedAt: new Date() },
   });
 
-  noContentResponse(res);
+  successResponse(res, { deleted: true, id });
 });

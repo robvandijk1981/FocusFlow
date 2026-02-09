@@ -164,5 +164,5 @@ export const deleteGoal = asyncHandler(async (req: Request, res: Response) => {
     });
   });
 
-  noContentResponse(res);
+  successResponse(res, { deleted: true, id });
 });
