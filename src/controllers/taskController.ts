@@ -96,9 +96,9 @@ export const createTask = asyncHandler(async (req: Request, res: Response) => {
     data: {
       name: validatedData.name,
       goalId: validatedData.goalId,
-      urgency: validatedData.urgency,
-      todaysFocus: validatedData.todaysFocus,
-      completed: validatedData.completed,
+      urgency: validatedData.urgency ?? 'MIDDEN',
+      todaysFocus: validatedData.todaysFocus ?? false,
+      completed: validatedData.completed ?? false,
     },
     include: {
       goal: {

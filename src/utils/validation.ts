@@ -30,16 +30,17 @@ export const UpdateGoalSchema = z.object({
 
 // Task validation schemas
 export const CreateTaskSchema = z.object({
+  id: z.string().optional(),  // Allow frontend to send id (will be ignored)
   goalId: z.string().cuid('Invalid goal ID'),
   name: z.string().min(1, 'Task name is required').max(500),
-  urgency: UrgencySchema.optional(),
+  urgency: UrgencySchema.nullable().optional(),
   todaysFocus: z.boolean().optional(),
   completed: z.boolean().optional(),
 });
 
 export const UpdateTaskSchema = z.object({
   name: z.string().min(1).max(500).optional(),
-  urgency: UrgencySchema.optional(),
+  urgency: UrgencySchema.nullable().optional(),
   todaysFocus: z.boolean().optional(),
   completed: z.boolean().optional(),
   goalId: z.string().cuid().optional(),
